@@ -24,6 +24,6 @@ Je vous propose les commandes suivantes, n'hésitez à les modifier selon vos pr
 `docker build -t todoimage/todoproject:latest .`
 
 ### Démarrage de l'image
-docker run -d -p 8080:3000 todoimage/todoproject
+`docker run -d -p 8080:3000 todoimage/todoproject`
 
 Avec la commande ci-dessus, rendez-vous à l'adresse [http://localhost:8080](http://localhost:8080)
