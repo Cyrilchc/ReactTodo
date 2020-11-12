@@ -12,6 +12,7 @@ import { makeStyles, withStyles, createStyles } from "@material-ui/core/styles";
 import { Theme } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import PopupCardCreation from './components/PopupCardCreation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       flexGrow: 1,
     },
-    addButton:{
+    addButton: {
       height: '6em',
       width: '6em'
     }
@@ -73,11 +74,7 @@ function App() {
             })}
         </div>
         <div className="goBottomRight">
-          <Tooltip title="Ajouter une liste">
-            <Fab className={classes.addButton} color="primary" aria-label="add">
-              <AddIcon />
-            </Fab>
-          </Tooltip>
+          <PopupCardCreation />
         </div>
       </body>
     </div>
