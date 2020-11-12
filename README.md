@@ -7,13 +7,13 @@ Cette application est le rendu d'un TP noté suivant les consignes suivantes :
 - Bien entendu, pour qu’une ToDo List soit valable, on doit pouvoir mettre à jour facilement le statut d’une tâche (réalisé ou non)
 - Faites en sorte d’afficher un suivi des tâches réalisées (avec un compteur, par exemple)
 
-# Démarrer le projet
-
 ## Prérequis
 
 Assurez vous que [Nodejs](https://nodejs.org/en/) est installé sur votre machine.
 
 Si vous souhaitez lancer l'application en mode production, assurez-vous que [Docker](https://docs.docker.com/get-docker/) est installé sur votre machine.
+
+# Démarrer le projet
 
 Dans le répertoire du projet :
 
