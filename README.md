@@ -9,6 +9,11 @@ Cette application est le rendu d'un TP noté suivant les consignes suivantes :
 
 # Démarrer le projet
 
+## Prérequis
+
+Assurez vous que [Nodejs](https://nodejs.org/en/) est installé sur votre machine.
+Si vous souhaitez lancer l'application en mode production, assurez-vous que [Docker](https://docs.docker.com/get-docker/) est installé sur votre machine.
+
 Dans le répertoire du projet :
 
 ## Lancement en mode développement : 
