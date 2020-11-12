@@ -1,8 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,7 +13,7 @@ import Grow from '@material-ui/core/Grow';
 import TextField from '@material-ui/core/TextField';
 import Fire from '../fire'
 import { List } from '../objects/List';
-import { Todo } from '../objects/Todo';
+import MenuItem from '@material-ui/core/MenuItem';
 import SnackBarAlert from './SnackBarAlert';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,39 +35,32 @@ const Transition = React.forwardRef(function Transition(
     return <Grow ref={ref} {...props} />;
 });
 
-export default function PopupCardCreation() {
+interface PopupCardEditListProps {
+    list: List
+}
+
+export default function PopupCardEditList(props: PopupCardEditListProps) {
     const classes = useStyles();
 
     // https://material-ui.com/components/dialogs/
     const [open, setOpen] = React.useState(false);
     const [isError, setError] = React.useState(false);
-    const [inputValue, setInputValue] = React.useState('');
+    const [inputValue, setInputValue] = React.useState(props.list.Name);
     const [inputHelper, setInputHelper] = React.useState('Veuillez entrer un nom');
     const [inputLabel, setInputLabel] = React.useState('Nom');
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [snackOpen, setSnackOpen] = React.useState(false);
 
-
-    /**
-     * Ouvre la popup
-     */
     const handleClickOpen = () => {
         setOpen(true);
     };
 
-    /**
-     * Ferme la popup
-     */
     const handleClose = () => {
-        setInputValue('')
         setOpen(false);
     };
 
-    /**
-     * Créé la liste
-     */
-    const handleAddList = () => {
+    const handleEditList = () => {
         if (inputValue === '') {
             // Le champ est encore vide, afficher le message d'erreur
             setInputHelper('Le champ est vide, veuillez entrer un nom pour votre liste')
@@ -81,20 +71,17 @@ export default function PopupCardCreation() {
             setInputHelper('Veuillez entrer un nom')
             setInputLabel('Nom')
             setError(false)
-            // Création de l'objet List
-            let list: List = { Name: inputValue, Todos: new Array<Todo>() }
-
-            // Ajout en base
+            // Modification en base
             let firebase = new Fire((error: any) => {
                 if (error) {
                     return alert("Une erreur est survenue lors de la connexion à la base de données");
                 }
 
                 setSnackOpen(true);
-                firebase.addList(list);
+                props.list.Name = inputValue
+                firebase.updateList(props.list)
             });
 
-            setInputValue('')
             setOpen(false);
         }
     }
@@ -108,11 +95,7 @@ export default function PopupCardCreation() {
 
     return (
         <>
-            <Tooltip title="Ajouter une liste">
-                <Fab className={classes.addButton} color="primary" aria-label="add" onClick={handleClickOpen}>
-                    <AddIcon />
-                </Fab>
-            </Tooltip>
+            <MenuItem onClick={handleClickOpen}>Modifier le titre</MenuItem>
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
@@ -120,7 +103,7 @@ export default function PopupCardCreation() {
                 aria-labelledby="responsive-dialog-title"
                 TransitionComponent={Transition}
             >
-                <DialogTitle id="responsive-dialog-title">Ajouter une liste</DialogTitle>
+                <DialogTitle id="responsive-dialog-title">Modifier une liste</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Veuillez entrer le nom de la liste.
@@ -128,7 +111,7 @@ export default function PopupCardCreation() {
                     <TextField
                         className={classes.inputField}
                         error={isError}
-                        placeholder="Nom de la nouvelle liste"
+                        placeholder="Nom de la liste"
                         id="outlined-error-helper-text"
                         label={inputLabel}
                         helperText={inputHelper}
@@ -138,8 +121,8 @@ export default function PopupCardCreation() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={handleAddList} color="primary">
-                        Ajouter
+                    <Button autoFocus onClick={handleEditList} color="primary">
+                        Modifier
                     </Button>
                     <Button onClick={handleClose} color="default" autoFocus>
                         Annuler
@@ -148,7 +131,7 @@ export default function PopupCardCreation() {
             </Dialog>
             {
                 snackOpen &&
-                <SnackBarAlert description={"Liste créée avec succès"} snackVisible={snackOpen} />
+                <SnackBarAlert description={"Liste modifiée avec succès"} snackVisible={snackOpen} />
             }
         </>
     );

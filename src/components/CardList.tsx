@@ -1,22 +1,24 @@
 import React from 'react';
 import { List } from '../objects/List';
+import { Todo } from '../objects/Todo';
 import Card from '@material-ui/core/Card';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CardActions from '@material-ui/core/CardActions';
 import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Edit from '@material-ui/icons/Edit';
-import AddIcon from '@material-ui/icons/Add';
 import Delete from '@material-ui/icons/Delete';
 import { CardContent, CardHeader, Collapse, GridList, GridListTile, Theme, } from '@material-ui/core';
-import { makeStyles, withStyles, createStyles } from "@material-ui/core/styles";
-import { red } from '@material-ui/core/colors';
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from 'clsx';
-import { CheckBox } from '@material-ui/icons';
 import Tooltip from '@material-ui/core/Tooltip';
+import PopupCardCreationTodo from './PopupCardCreationTodo'
+import PopupCardEditTodo from './PopupCardEditTodo'
+import PopupCardEditList from './PopupCardEditList'
+import Fire from '../fire'
 
 /**
  * Style
@@ -38,21 +40,27 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         alignItem: {
             display: 'flex',
-            alignItems: 'center'
+            flexWrap: 'wrap',
+            alignItems: 'center',
         },
         goRight: {
             display: 'block',
             marginLeft: 'auto',
             marginRight: '0'
+        },
+        taskUnCrossed: {
+            maxWidth: '130px',
+            textDecoration: 'none'
+        },
+        taskCrossed: {
+            maxWidth: '130px',
+            textDecoration: 'line-through'
         }
     }),
 );
 
 interface CardListProps {
     list: List;
-    /*AddTodo: () => void;
-    DeleteList: () => void;
-    EditListName: () => void;*/
 }
 
 export default function CardList(props: CardListProps) {
@@ -66,10 +74,6 @@ export default function CardList(props: CardListProps) {
     // https://material-ui.com/components/cards/
     // Expand button
     const [expanded, setExpanded] = React.useState(false);
-
-    // https://material-ui.com/components/checkboxes/
-    // Changement de coche des CheckBoxes
-    const [checked, setChecked] = React.useState(true);
 
     /**
      * Gère la position de la flèche
@@ -94,45 +98,59 @@ export default function CardList(props: CardListProps) {
     };
 
     /**
-     * Ouvre la popup de modification du titre
-     */
-    const handleEditTitle = () => {
-        handleClose();
-    };
-
-    /**
      * Supprime la liste 
      */
-    const handleDeleteList = () => {
+    const handleDeleteList = (list: List) => {
+        // Suppression en base
+        let firebase = new Fire((error: any) => {
+            if (error) {
+                return alert("Une erreur est survenue lors de la connexion à la base de données");
+            }
+
+            firebase.deleteList(props.list)
+        });
         handleClose();
     };
 
     /**
      * Gère le changement de coche
+     * @param todo La todo à modifier
+     * @param i L'index de la todo dans la liste
      */
-    const handleCheckChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-        //event.target.checked = !event.target.checked
+    const handleCheckChanged = (todo: Todo, i: number) => {
+        props.list.Todos[i].Completion = !props.list.Todos[i].Completion
+
+        // Modification en base
+        let firebase = new Fire((error: any) => {
+            if (error) {
+                return alert("Une erreur est survenue lors de la connexion à la base de données");
+            }
+
+            firebase.updateList(props.list)
+        });
     };
 
     /**
-     * Ouvre la popup de modification de Todo
-     */
-    const handleEditTodo = () => {
-
-    }
-
-    /**
      * Gère la suppression de la todo
+     * @param todo La todo à modifier
      */
-    const handleDeleteTodo = () => {
+    const handleDeleteTodo = (todo: Todo) => {
+        // Retrait de la tâche non désirée de la liste
+        let index = props.list.Todos.indexOf(todo)
+        props.list.Todos.splice(index, 1);
 
-    }
+        // Ferme le tiroir si aucune tâche n'existe
+        if (props.list.Todos.length === 0)
+            setExpanded(false)
 
-    /**
-     * Gère l'ajout d'une tâche
-     */
-    const handleAddTodo = () => {
+        // Modification en base
+        let firebase = new Fire((error: any) => {
+            if (error) {
+                return alert("Une erreur est survenue lors de la connexion à la base de données");
+            }
 
+            firebase.updateList(props.list)
+        });
     }
 
     return (
@@ -141,10 +159,14 @@ export default function CardList(props: CardListProps) {
                 <CardHeader
                     title={props.list.Name}
                     subheader={
-                        "Tâches complétées : " +
-                        props.list.Todos.filter(function (todo) {
-                            return todo.Completion;
-                        }).length + " / " + props.list.Todos.length
+                        props.list.Todos.length === 0 ? "Aucune tâche créée." :
+                            props.list.Todos.filter(function (todo) {
+                                return todo.Completion;
+                            }).length === props.list.Todos.length ? "Tâches toutes réalisées. Félicitation !" :
+                                "Tâches complétées : " +
+                                props.list.Todos.filter(function (todo) {
+                                    return todo.Completion;
+                                }).length + " / " + props.list.Todos.length
                     }
                     action={
                         <Tooltip title="Ouvrir le menu">
@@ -156,23 +178,21 @@ export default function CardList(props: CardListProps) {
                 />
                 <CardContent>
                     <CardActions disableSpacing>
-                        <Tooltip title="Ajouter une tâche">
-                            <IconButton
-                                onClick={handleAddTodo}
-                                aria-label="Ajouter une tâche"
-                            >
-                                <AddIcon />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Afficher / Cacher les tâches">
-                            <IconButton className={clsx(classes.expand, { [classes.expandOpen]: expanded })}
-                                onClick={handleExpandClick}
-                                aria-expanded={expanded}
-                                aria-label="Montrer plus"
-                            >
-                                <ExpandMoreIcon />
-                            </IconButton>
-                        </Tooltip>
+                        <PopupCardCreationTodo list={props.list} />
+                        {
+                            props.list.Todos.length > 0 ?
+                                <Tooltip title="Afficher / Cacher les tâches">
+                                    <IconButton className={clsx(classes.expand, { [classes.expandOpen]: expanded })}
+                                        onClick={handleExpandClick}
+                                        aria-expanded={expanded}
+                                        aria-label="Montrer plus"
+                                    >
+                                        <ExpandMoreIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                :
+                                null
+                        }
                     </CardActions>
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <CardContent>
@@ -181,16 +201,14 @@ export default function CardList(props: CardListProps) {
                                     props.list.Todos.map((todo, i) => (
                                         <GridListTile>
                                             <div className={classes.alignItem}>
-                                                <p>{todo.Name}</p>
-                                                <Checkbox checked={todo.Completion} onChange={handleCheckChanged} />
+                                                <Tooltip title={todo.Name}>
+                                                    <Typography className={todo.Completion ? classes.taskCrossed : classes.taskUnCrossed} noWrap={true}>{todo.Name}</Typography>
+                                                </Tooltip>
+                                                <Checkbox color="primary" checked={todo.Completion} onChange={() => handleCheckChanged(todo, i)} />
                                                 <div className={classes.goRight}>
-                                                    <Tooltip title="Modifier la tâche">
-                                                        <IconButton onClick={handleEditTodo}>
-                                                            <Edit />
-                                                        </IconButton>
-                                                    </Tooltip>
+                                                    <PopupCardEditTodo list={props.list} todoId={i} />
                                                     <Tooltip title="Supprimer la tâche">
-                                                        <IconButton onClick={handleDeleteTodo}>
+                                                        <IconButton onClick={() => handleDeleteTodo(todo)}>
                                                             <Delete />
                                                         </IconButton>
                                                     </Tooltip>
@@ -211,8 +229,8 @@ export default function CardList(props: CardListProps) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleEditTitle}>Modifier le titre</MenuItem>
-                <MenuItem onClick={handleDeleteList}>Supprimer cette liste</MenuItem>
+                <PopupCardEditList list={props.list} />
+                <MenuItem onClick={() => handleDeleteList(props.list)}>Supprimer cette liste</MenuItem>
             </Menu>
         </div>
     );

@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -16,7 +15,7 @@ import Grow from '@material-ui/core/Grow';
 import TextField from '@material-ui/core/TextField';
 import Fire from '../fire'
 import { List } from '../objects/List';
-import { Todo } from '../objects/Todo';
+import IconButton from '@material-ui/core/IconButton';
 import SnackBarAlert from './SnackBarAlert';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,7 +37,11 @@ const Transition = React.forwardRef(function Transition(
     return <Grow ref={ref} {...props} />;
 });
 
-export default function PopupCardCreation() {
+interface PopupCardCreationTodoProps {
+    list: List
+}
+
+export default function PopupCardCreationTodo(props: PopupCardCreationTodoProps) {
     const classes = useStyles();
 
     // https://material-ui.com/components/dialogs/
@@ -51,29 +54,22 @@ export default function PopupCardCreation() {
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [snackOpen, setSnackOpen] = React.useState(false);
 
-
-    /**
-     * Ouvre la popup
-     */
     const handleClickOpen = () => {
         setOpen(true);
     };
 
-    /**
-     * Ferme la popup
-     */
     const handleClose = () => {
         setInputValue('')
         setOpen(false);
     };
 
     /**
-     * Créé la liste
+     * Créé la tâche
      */
-    const handleAddList = () => {
+    const handleAddTask = () => {
         if (inputValue === '') {
             // Le champ est encore vide, afficher le message d'erreur
-            setInputHelper('Le champ est vide, veuillez entrer un nom pour votre liste')
+            setInputHelper('Le champ est vide, veuillez entrer un nom pour votre tâche')
             setInputLabel('Erreur, le champ est vide')
             setError(true)
         } else {
@@ -82,18 +78,16 @@ export default function PopupCardCreation() {
             setInputLabel('Nom')
             setError(false)
             // Création de l'objet List
-            let list: List = { Name: inputValue, Todos: new Array<Todo>() }
-
-            // Ajout en base
+            // Modification en base
             let firebase = new Fire((error: any) => {
                 if (error) {
                     return alert("Une erreur est survenue lors de la connexion à la base de données");
                 }
 
+                props.list.Todos.push({ Name: inputValue, Completion: false })
                 setSnackOpen(true);
-                firebase.addList(list);
+                firebase.updateList(props.list)
             });
-
             setInputValue('')
             setOpen(false);
         }
@@ -108,10 +102,13 @@ export default function PopupCardCreation() {
 
     return (
         <>
-            <Tooltip title="Ajouter une liste">
-                <Fab className={classes.addButton} color="primary" aria-label="add" onClick={handleClickOpen}>
+            <Tooltip title="Ajouter une tâche">
+                <IconButton
+                    onClick={handleClickOpen}
+                    aria-label="Ajouter une tâche"
+                >
                     <AddIcon />
-                </Fab>
+                </IconButton>
             </Tooltip>
             <Dialog
                 fullScreen={fullScreen}
@@ -120,15 +117,15 @@ export default function PopupCardCreation() {
                 aria-labelledby="responsive-dialog-title"
                 TransitionComponent={Transition}
             >
-                <DialogTitle id="responsive-dialog-title">Ajouter une liste</DialogTitle>
+                <DialogTitle id="responsive-dialog-title">Ajouter une tâche</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Veuillez entrer le nom de la liste.
+                        Veuillez entrer le nom de la tâche.
                     </DialogContentText>
                     <TextField
                         className={classes.inputField}
                         error={isError}
-                        placeholder="Nom de la nouvelle liste"
+                        placeholder="Nom de la nouvelle tâche"
                         id="outlined-error-helper-text"
                         label={inputLabel}
                         helperText={inputHelper}
@@ -138,7 +135,7 @@ export default function PopupCardCreation() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={handleAddList} color="primary">
+                    <Button autoFocus onClick={handleAddTask} color="primary">
                         Ajouter
                     </Button>
                     <Button onClick={handleClose} color="default" autoFocus>
@@ -148,7 +145,7 @@ export default function PopupCardCreation() {
             </Dialog>
             {
                 snackOpen &&
-                <SnackBarAlert description={"Liste créée avec succès"} snackVisible={snackOpen} />
+                <SnackBarAlert description={"Tâche créée avec succès"} snackVisible={snackOpen} />
             }
         </>
     );

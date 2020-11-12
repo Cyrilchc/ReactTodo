@@ -13,6 +13,8 @@ import { Theme } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import PopupCardCreation from './components/PopupCardCreation';
+import Dialog from '@material-ui/core/Dialog';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,10 +33,14 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   }),
 );
+
 function App() {
   const classes = useStyles();
   const [lists, setLists] = useState(Array<List>())
   const [loading, setLoading] = useState(true)
+  const [easterEggOpen, setEasterEggOpen] = React.useState(false);
+  const [easterEggCount, setEasterEggCount] = React.useState(0);
+  //let easterEgg = 1
 
   useEffect(() => {
     let firebase = new Fire((error: any) => {
@@ -53,16 +59,43 @@ function App() {
     })
   }, []);
 
+  /**
+    * Mise à jour de la value de l'Input
+    */
+  const handleEasterEgg = () => {
+    if (easterEggCount > 8) {
+      setEasterEggCount(easterEggCount + 1)
+      setEasterEggOpen(true)
+      setEasterEggCount(0)
+    } else {
+      setEasterEggCount(easterEggCount + 1)
+    }
+  }
+
+  /**
+   * Ferme l'easterEgg
+   */
+  const handleEasterEggClose = () => {
+    setEasterEggOpen(false);
+  };
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar>
-          <h1>Application Todo</h1>
+        <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+          <h1 onClick={handleEasterEgg}>Application Todo</h1>
+          <p style={{ color: 'rgb(63, 81, 220)' }}>{easterEggCount + " / " + 10}</p>
         </Toolbar>
       </AppBar>
       <header>
       </header>
       <body>
+        <Dialog
+          open={easterEggOpen}
+          onClose={handleEasterEggClose}
+        >
+          <img alt="easterEgg" src={window.location.origin + '/easterEgg.jpg'} />
+        </Dialog>
         <div className="flexContainer">
           {loading ?
             <CircularProgress /> :

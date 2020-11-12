@@ -4,6 +4,7 @@
   justify-content: center;
   place-items: center;
   margin: 2em;
+  gap: 1em;
 }
 
 .goBottomRight{
