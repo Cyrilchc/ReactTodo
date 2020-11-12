@@ -19,6 +19,7 @@ import PopupCardCreationTodo from './PopupCardCreationTodo'
 import PopupCardEditTodo from './PopupCardEditTodo'
 import PopupCardEditList from './PopupCardEditList'
 import Fire from '../fire'
+import SnackBarAlert from './SnackBarAlert';
 
 /**
  * Style
@@ -106,7 +107,7 @@ export default function CardList(props: CardListProps) {
             if (error) {
                 return alert("Une erreur est survenue lors de la connexion à la base de données");
             }
-
+            
             firebase.deleteList(props.list)
         });
         handleClose();
@@ -154,7 +155,7 @@ export default function CardList(props: CardListProps) {
     }
 
     return (
-        <div>
+        <>
             <Card className={classes.root}>
                 <CardHeader
                     title={props.list.Name}
@@ -232,6 +233,6 @@ export default function CardList(props: CardListProps) {
                 <PopupCardEditList list={props.list} />
                 <MenuItem onClick={() => handleDeleteList(props.list)}>Supprimer cette liste</MenuItem>
             </Menu>
-        </div>
+        </>
     );
 }
