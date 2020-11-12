@@ -17,7 +17,7 @@ Si vous souhaitez lancer l'application en mode production, assurez-vous que [Doc
 
 Dans le répertoire du projet :
 
-## Lancement en mode développement : 
+## Lancement en mode développement
 
 Lancez la commande `npm start`
 Rendez-vous à l'adresse [http://localhost:3000](http://localhost:3000)
