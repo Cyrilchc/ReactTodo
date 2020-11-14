@@ -11,6 +11,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Grow from '@material-ui/core/Grow';
+import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import Fire from '../fire'
 import { List } from '../objects/List';
@@ -26,7 +27,17 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         inputField: {
             width: '25em'
-        }
+        },
+        textAreaField: {
+            width: '25em',
+            minHeight: '5em'
+        },
+        dialogPos: {
+            position: 'absolute',
+            right: 10,
+            top: 10,
+            bottom: 10,
+        },
     }),
 );
 
@@ -34,7 +45,8 @@ const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement<any, any> },
     ref: React.Ref<unknown>,
 ) {
-    return <Grow ref={ref} {...props} />;
+    // return <Grow ref={ref} {...props} />;
+    return <Slide direction="left" ref={ref} {...props} />;
 });
 
 interface PopupCardEditTodoProps {
@@ -49,6 +61,7 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
     const [open, setOpen] = React.useState(false);
     const [isError, setError] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(props.list.Todos[props.todoId].Name);
+    const [textAreaValue, setTextAreaValue] = React.useState(props.list.Todos[props.todoId].Description);
     const [inputHelper, setInputHelper] = React.useState('Veuillez entrer un nom');
     const [inputLabel, setInputLabel] = React.useState('Nom');
     const theme = useTheme();
@@ -82,6 +95,7 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
 
                 setSnackOpen(true);
                 props.list.Todos[props.todoId].Name = inputValue
+                props.list.Todos[props.todoId].Description = textAreaValue
                 firebase.updateList(props.list)
             });
             setOpen(false);
@@ -93,6 +107,14 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
      */
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
+    }
+
+    /**
+     * Mise à jour de la value du textArea
+     * @param event 
+     */
+    const handleTextAreaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTextAreaValue(event.target.value);
     }
 
     return (
@@ -108,6 +130,7 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
                 onClose={handleClose}
                 aria-labelledby="responsive-dialog-title"
                 TransitionComponent={Transition}
+                classes={{ paper: fullScreen ? '' : classes.dialogPos }}
             >
                 <DialogTitle id="responsive-dialog-title">Modifier une tâche</DialogTitle>
                 <DialogContent>
@@ -124,6 +147,19 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
                         variant="outlined"
                         value={inputValue}
                         onChange={handleChange}
+                    />
+                    <br/>
+                    <hr/>
+                    <br/>
+                    <TextField
+                        className={classes.inputField}
+                        id="outlined-multiline-static"
+                        label="Description"
+                        multiline
+                        placeholder="Description de la tâche"
+                        value={textAreaValue}
+                        onChange={handleTextAreaChange}
+                        variant="outlined"
                     />
                 </DialogContent>
                 <DialogActions>

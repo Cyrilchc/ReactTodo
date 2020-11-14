@@ -19,7 +19,9 @@ Dans le répertoire du projet :
 
 ## Lancement en mode développement
 Installez les dépendances en avec la commande `npm install`
+
 Démarrez le serveur de développement avec la commande `npm start`
+
 Rendez-vous à l'adresse [http://localhost:3000](http://localhost:3000)
 
 ## Lancement en mode production avec Docker

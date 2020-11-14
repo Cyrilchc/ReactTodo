@@ -21,9 +21,13 @@ import SnackBarAlert from './SnackBarAlert';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        addButton: {
+        addButtonBig: {
             height: '6em',
             width: '6em'
+        },
+        addButtonSmall: {
+            height: '40',
+            width: '40'
         },
         inputField: {
             width: '25em'
@@ -50,7 +54,6 @@ export default function PopupCardCreation() {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [snackOpen, setSnackOpen] = React.useState(false);
-
 
     /**
      * Ouvre la popup
@@ -109,7 +112,7 @@ export default function PopupCardCreation() {
     return (
         <>
             <Tooltip title="Ajouter une liste">
-                <Fab className={classes.addButton} color="primary" aria-label="add" onClick={handleClickOpen}>
+                <Fab className={fullScreen ? classes.addButtonSmall : classes.addButtonBig} color="primary" aria-label="add" onClick={handleClickOpen}>
                     <AddIcon />
                 </Fab>
             </Tooltip>
