@@ -18,8 +18,8 @@ Si vous souhaitez lancer l'application en mode production, assurez-vous que [Doc
 Dans le répertoire du projet :
 
 ## Lancement en mode développement
-
-Lancez la commande `npm start`
+Installez les dépendances en avec la commande `npm install`
+Démarrez le serveur de développement avec la commande `npm start`
 Rendez-vous à l'adresse [http://localhost:3000](http://localhost:3000)
 
 ## Lancement en mode production avec Docker
@@ -32,4 +32,4 @@ Je vous propose les commandes suivantes, n'hésitez à les modifier selon vos pr
 ### Démarrage de l'image
 `docker run -d -p 8080:3000 todoimage/todoproject`
 
-Avec la commande ci-dessus, rendez-vous à l'adresse [http://localhost:8080](http://localhost:8080)
+Rendez-vous à l'adresse [http://localhost:8080](http://localhost:8080)
