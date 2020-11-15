@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'fontsource-roboto';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import { List } from './objects/List';
 import Fire from './fire'
 import CardList from './components/CardList'
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles, withStyles, createStyles, useTheme, fade } from "@material-ui/core/styles";
-import { Hidden, Theme } from '@material-ui/core';
+import { makeStyles, createStyles, useTheme, fade } from "@material-ui/core/styles";
+import { Theme, Typography } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import PopupCardCreation from './components/PopupCardCreation';
 import Dialog from '@material-ui/core/Dialog';
-import Avatar from '@material-ui/core/Avatar';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-import { getMaxListeners } from 'process';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,7 +24,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
     },
     title: {
-      flexGrow: 1,
+      display: 'none',
+      [theme.breakpoints.up('sm')]: {
+        display: 'block',
+      },
     },
     goBottomRightFar: {
       position: 'fixed',
@@ -40,6 +38,17 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'fixed',
       right: '1em',
       bottom: '1em'
+    },
+    goRightEaster:{
+      position: 'fixed',
+      right: '1em',
+      color: 'white'
+    },
+    goBottomLeftEaster:{
+      position: 'fixed',
+      left: '1em',
+      bottom: '1em',
+      color:'black'
     },
     search: {
       position: 'relative',
@@ -70,8 +79,25 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-      width: '20em',
+      transition: theme.transitions.create('width'),
+      width: '100%',
+      [theme.breakpoints.up('md')]: {
+        width: 'auto',
+      },
+    },
+    sectionDesktop: {
+      display: 'none',
+      [theme.breakpoints.up('md')]: {
+        display: 'flex',
+      },
+    },
+    sectionMobile: {
+      display: 'flex',
+      [theme.breakpoints.up('md')]: {
+        display: 'none',
+      },
     },
   }),
 );
@@ -86,6 +112,7 @@ function App() {
   const [easterEggCount, setEasterEggCount] = React.useState(0);
   const [searchValue, setSearchValue] = React.useState('');
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
 
   useEffect(() => {
     let firebase = new Fire((error: any) => {
@@ -152,7 +179,7 @@ function App() {
       <AppBar position="static">
         {/* <Toolbar style={{ display: "flex", justifyContent: "space-between" }}> */}
         <Toolbar>
-          <h1 onClick={handleEasterEgg}>Application Todo</h1>
+          <Typography onClick={handleEasterEgg} className={classes.title} variant="h5">Application Todo</Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -169,7 +196,7 @@ function App() {
               onKeyDown={handleSearchKeyDown}
             />
           </div>
-          <p style={{ position:'fixed', right:'1em', visibility: easterEggCount > 0 ? 'visible' : 'hidden' }}>{easterEggCount + " / " + 10}</p>
+          <Typography style={{ visibility: easterEggCount > 0 ? 'visible' : 'hidden' }} className={fullScreen ? classes.goBottomLeftEaster : classes.goRightEaster} variant="body1">{easterEggCount + " / " + 10}</Typography>
         </Toolbar>
       </AppBar>
       <header>

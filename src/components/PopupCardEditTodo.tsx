@@ -10,7 +10,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import { TransitionProps } from '@material-ui/core/transitions';
-import Grow from '@material-ui/core/Grow';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import Fire from '../fire'
