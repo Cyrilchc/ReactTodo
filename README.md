@@ -35,3 +35,6 @@ Je vous propose les commandes suivantes, n'hésitez à les modifier selon vos pr
 `docker run -d -p 8080:3000 todoimage/todoproject`
 
 Rendez-vous à l'adresse [http://localhost:8080](http://localhost:8080)
+
+## Visiter le site
+Vous pouvez tester directement le site [ici](https://cyrilchc.github.io/ReactTodo/)
