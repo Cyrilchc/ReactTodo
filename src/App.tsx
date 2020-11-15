@@ -80,6 +80,7 @@ function App() {
   const classes = useStyles();
   const theme = useTheme();
   const [lists, setLists] = useState(Array<List>())
+  const [mutableLists, setMutableLists] = useState(Array<List>())
   const [loading, setLoading] = useState(true)
   const [easterEggOpen, setEasterEggOpen] = React.useState(false);
   const [easterEggCount, setEasterEggCount] = React.useState(0);
@@ -94,6 +95,7 @@ function App() {
 
       firebase.getLists((lists: List[]) => {
         setLists(lists);
+        setMutableLists(lists)
         setLoading(false);
       });
 
@@ -124,54 +126,32 @@ function App() {
   };
 
   /**
-  * Mise à jour de la value de la recherche
+  * Filtre les listes
   */
+  const handleSearchKeyDown = (event: React.KeyboardEvent): any => {
+    if (event.key === 'Enter') {
+      if (searchValue === "") {
+        setMutableLists(lists)
+      } else {
+        let newLists = lists.filter(list => list.Name.toLowerCase().includes(searchValue.toLowerCase()));
+        setMutableLists(newLists)
+      }
+    }
+  }
+
+  /**
+   * Met à jour la valeur de la recherche
+   * @param event 
+   */
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
-  }
-
-  /**
-   * Effectue la recherche dans les listes
-   */
-  const searchLists = () => {
-    setLoading(true);
-    let firebase = new Fire((error: any) => {
-      if (error) {
-        return alert("Une erreur est survenue lors de la connexion à la base de données");
-      }
-
-      firebase.getLists((lists: List[]) => {
-        setLists(lists);
-        console.log('setlists')
-        console.log(lists)
-      });
-    });
-
-    setTimeout(function () {
-      let filteredLists = lists.filter(list => list.Name.toLowerCase().includes(searchValue.toLowerCase()));
-      setLists(filteredLists)
-      console.log('filtered')
-      console.log(searchValue)
-      console.log(filteredLists)
-      setLoading(false);
-    }, 2000);
-  }
-
-  /**
-   * Gestion de la touche entrée
-   * @param e 
-   */
-  const handleEnterKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      console.log("touche entrée !")
-      searchLists()
-    }
   }
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+        {/* <Toolbar style={{ display: "flex", justifyContent: "space-between" }}> */}
+        <Toolbar>
           <h1 onClick={handleEasterEgg}>Application Todo</h1>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -186,11 +166,10 @@ function App() {
               inputProps={{ 'aria-label': 'search' }}
               value={searchValue}
               onChange={handleSearchChange}
-              onKeyDown={handleEnterKey}
+              onKeyDown={handleSearchKeyDown}
             />
-
           </div>
-          <p style={{ visibility: easterEggCount > 0 ? 'visible' : 'hidden' }}>{easterEggCount + " / " + 10}</p>
+          <p style={{ position:'fixed', right:'1em', visibility: easterEggCount > 0 ? 'visible' : 'hidden' }}>{easterEggCount + " / " + 10}</p>
         </Toolbar>
       </AppBar>
       <header>
@@ -205,7 +184,7 @@ function App() {
         <div className="flexContainer">
           {loading ?
             <CircularProgress /> :
-            lists.map((list, i) => {
+            mutableLists.map((list, i) => {
               return (
                 <CardList list={list} />
               );
