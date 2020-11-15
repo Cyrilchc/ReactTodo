@@ -19,7 +19,9 @@ import PopupCardCreationTodo from './PopupCardCreationTodo'
 import PopupCardEditTodo from './PopupCardEditTodo'
 import PopupCardEditList from './PopupCardEditList'
 import Fire from '../fire'
-import SnackBarAlert from './SnackBarAlert';
+import Fab from '@material-ui/core/Fab';
+import ColorPicker from "react-pick-color";
+import Popover from '@material-ui/core/Popover';
 
 /**
  * Style
@@ -76,6 +78,26 @@ export default function CardList(props: CardListProps) {
     // Expand button
     const [expanded, setExpanded] = React.useState(false);
 
+    const [anchorPopover, setAnchorElPopover] = React.useState<HTMLButtonElement | null>(null);
+
+    const openPopover = Boolean(anchorPopover);
+    const id = openPopover ? 'simple-popover' : undefined;
+
+    /**
+     * Popup colorPicker
+     * @param event 
+     */
+    const handlePopoverClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElPopover(event.currentTarget);
+    };
+
+    /**
+     * Fermeture colorPicker
+     */
+    const handlePopoverClose = () => {
+        setAnchorElPopover(null);
+    };
+
     /**
      * Gère la position de la flèche
      */
@@ -107,7 +129,7 @@ export default function CardList(props: CardListProps) {
             if (error) {
                 return alert("Une erreur est survenue lors de la connexion à la base de données");
             }
-            
+
             firebase.deleteList(props.list)
         });
         handleClose();
@@ -154,11 +176,50 @@ export default function CardList(props: CardListProps) {
         });
     }
 
+    /**
+     * Gère le changement de couleur
+     * @param color 
+     */
+    const handleColorChange = (color: string) => {
+        props.list.Color = color;
+        // Modification en base
+        let firebase = new Fire((error: any) => {
+            if (error) {
+                return alert("Une erreur est survenue lors de la connexion à la base de données");
+            }
+
+            firebase.updateList(props.list)
+        });
+    }
+
     return (
         <>
             <Card className={classes.root}>
                 <CardHeader
                     title={props.list.Name}
+                    avatar={
+                        <div>
+                            <Tooltip title="Modifier la couleur">
+                                <Fab size={'small'} style={{ backgroundColor: props.list.Color }} aria-label="add" onClick={handlePopoverClick}> <p></p></Fab>
+                            </Tooltip>
+                            <Popover
+                                id={id}
+                                open={openPopover}
+                                anchorEl={anchorPopover}
+                                onClose={handlePopoverClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'center',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                            >
+                                <ColorPicker color={props.list.Color} onChange={(color) => handleColorChange(color.hex)} />
+                            </Popover>
+                        </div>
+                    }
                     subheader={
                         props.list.Todos.length === 0 ? "Aucune tâche créée." :
                             props.list.Todos.filter(function (todo) {
@@ -205,7 +266,7 @@ export default function CardList(props: CardListProps) {
                                                 <Tooltip title={todo.Name}>
                                                     <Typography className={todo.Completion ? classes.taskCrossed : classes.taskUnCrossed} noWrap={true}>{todo.Name}</Typography>
                                                 </Tooltip>
-                                                <Checkbox color="primary" checked={todo.Completion} onChange={() => handleCheckChanged(todo, i)} />
+                                                <Checkbox checked={todo.Completion} style={{ color: props.list.Color }} onChange={() => handleCheckChanged(todo, i)} />
                                                 <div className={classes.goRight}>
                                                     <PopupCardEditTodo list={props.list} todoId={i} />
                                                     <Tooltip title="Supprimer la tâche">

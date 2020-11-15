@@ -5,7 +5,7 @@ import { List } from './objects/List';
 import Fire from './fire'
 import CardList from './components/CardList'
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles, createStyles, useTheme, fade } from "@material-ui/core/styles";
+import { makeStyles, createStyles, useTheme, fade, createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Theme, Typography } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,6 +14,10 @@ import Dialog from '@material-ui/core/Dialog';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,6 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
       [theme.breakpoints.up('sm')]: {
         display: 'block',
       },
+
+      userSelect: 'none',
+      cursor: 'pointer'
     },
     goBottomRightFar: {
       position: 'fixed',
@@ -39,16 +46,25 @@ const useStyles = makeStyles((theme: Theme) =>
       right: '1em',
       bottom: '1em'
     },
-    goRightEaster:{
+    goRightEaster: {
       position: 'fixed',
       right: '1em',
       color: 'white'
     },
-    goBottomLeftEaster:{
+    goBottomLeftEaster: {
       position: 'fixed',
       left: '1em',
-      bottom: '1em',
-      color:'black'
+      bottom: '3em',
+      color: 'black'
+    },
+    goRightTheme: {
+      position: 'fixed',
+      right: '3em',
+    },
+    goBottomLeftTheme: {
+      position: 'fixed',
+      left: '0',
+      bottom: '0',
     },
     search: {
       position: 'relative',
@@ -79,7 +95,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
       transition: theme.transitions.create('width'),
       width: '100%',
@@ -104,7 +119,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function App() {
   const classes = useStyles();
-  const theme = useTheme();
+  const [prefersDarkMode, setThemeMode] = React.useState(false);
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: prefersDarkMode ? 'light' : 'dark',
+        },
+      }),
+    [prefersDarkMode],
+  );
+
   const [lists, setLists] = useState(Array<List>())
   const [mutableLists, setMutableLists] = useState(Array<List>())
   const [loading, setLoading] = useState(true)
@@ -112,7 +137,6 @@ function App() {
   const [easterEggCount, setEasterEggCount] = React.useState(0);
   const [searchValue, setSearchValue] = React.useState('');
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
 
   useEffect(() => {
     let firebase = new Fire((error: any) => {
@@ -174,12 +198,21 @@ function App() {
     setSearchValue(event.target.value);
   }
 
+  /**
+   * Gère le changement de thème
+   */
+  const handleChangeTheme = () => {
+    setThemeMode(!prefersDarkMode)
+  }
+
   return (
-    <div className={classes.root}>
+    <ThemeProvider theme={theme} >
+      <CssBaseline />
       <AppBar position="static">
-        {/* <Toolbar style={{ display: "flex", justifyContent: "space-between" }}> */}
         <Toolbar>
-          <Typography onClick={handleEasterEgg} className={classes.title} variant="h5">Application Todo</Typography>
+          <Tooltip title="Mais que se passe-t-il si je clique là dessus ?">
+            <Typography onClick={handleEasterEgg} className={classes.title} variant="h5">Application Todo</Typography>
+          </Tooltip>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -197,6 +230,11 @@ function App() {
             />
           </div>
           <Typography style={{ visibility: easterEggCount > 0 ? 'visible' : 'hidden' }} className={fullScreen ? classes.goBottomLeftEaster : classes.goRightEaster} variant="body1">{easterEggCount + " / " + 10}</Typography>
+          <Tooltip title="Activer le thème clair / sombre" className={fullScreen ? classes.goBottomLeftTheme : classes.goRightTheme}>
+            <IconButton aria-label="theming" onClick={handleChangeTheme}>
+              <Brightness4Icon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
       <header>
@@ -206,7 +244,10 @@ function App() {
           open={easterEggOpen}
           onClose={handleEasterEggClose}
         >
-          <img alt="easterEgg" src={window.location.origin + '/easterEgg.jpg'} />
+          <img alt="easterEgg" src={window.location.origin + '/easterEgg.jpg'}
+            onClick={() => window.open("https://knowyourmeme.com/memes/do-you-think-this-is-a-game", "_blank")}
+            style={{ cursor: 'pointer' }}
+          />
         </Dialog>
         <div className="flexContainer">
           {loading ?
@@ -221,7 +262,7 @@ function App() {
           <PopupCardCreation />
         </div>
       </body>
-    </div>
+    </ThemeProvider>
   );
 }
 

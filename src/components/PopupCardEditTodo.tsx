@@ -44,7 +44,6 @@ const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement<any, any> },
     ref: React.Ref<unknown>,
 ) {
-    // return <Grow ref={ref} {...props} />;
     return <Slide direction="left" ref={ref} {...props} />;
 });
 
@@ -55,15 +54,13 @@ interface PopupCardEditTodoProps {
 
 export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
     const classes = useStyles();
-
-    // https://material-ui.com/components/dialogs/
+    const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [isError, setError] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(props.list.Todos[props.todoId].Name);
     const [textAreaValue, setTextAreaValue] = React.useState(props.list.Todos[props.todoId].Description);
     const [inputHelper, setInputHelper] = React.useState('Veuillez entrer un nom');
     const [inputLabel, setInputLabel] = React.useState('Nom');
-    const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [snackOpen, setSnackOpen] = React.useState(false);
 
