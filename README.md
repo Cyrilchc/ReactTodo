@@ -18,7 +18,7 @@ Si vous souhaitez lancer l'application en mode production, assurez-vous que [Doc
 Dans le répertoire du projet :
 
 ## Lancement en mode développement
-Installez les dépendances en avec la commande `npm install`
+Installez les dépendances avec la commande `npm install`
 
 Démarrez le serveur de développement avec la commande `npm start`
 
