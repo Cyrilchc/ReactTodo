@@ -160,10 +160,9 @@ export default function CardList(props: CardListProps) {
      * Gère la suppression de la todo
      * @param todo La todo à modifier
      */
-    const handleDeleteTodo = (todo: Todo) => {
+    const handleDeleteTodo = (i:number) => {
         // Retrait de la tâche non désirée de la liste
-        let index = props.list.Todos.indexOf(todo)
-        props.list.Todos.splice(index, 1);
+        props.list.Todos.splice(i, 1);
 
         // Ferme le tiroir si aucune tâche n'existe
         if (props.list.Todos.length === 0)
@@ -274,7 +273,7 @@ export default function CardList(props: CardListProps) {
                                                 <div className={classes.goRight}>
                                                     <PopupCardEditTodo list={props.list} todoId={i} />
                                                     <Tooltip title="Supprimer la tâche">
-                                                        <IconButton onClick={() => handleDeleteTodo(todo)}>
+                                                        <IconButton onClick={() => handleDeleteTodo(i)}>
                                                             <Delete />
                                                         </IconButton>
                                                     </Tooltip>

@@ -57,8 +57,8 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [isError, setError] = React.useState(false);
-    const [inputValue, setInputValue] = React.useState(props.list.Todos[props.todoId].Name);
-    const [textAreaValue, setTextAreaValue] = React.useState(props.list.Todos[props.todoId].Description);
+    const [inputValue, setInputValue] = React.useState('');
+    const [textAreaValue, setTextAreaValue] = React.useState('');
     const [inputHelper, setInputHelper] = React.useState('Veuillez entrer un nom');
     const [inputLabel, setInputLabel] = React.useState('Nom');
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -66,6 +66,8 @@ export default function PopupCardEditTodo(props: PopupCardEditTodoProps) {
 
     const handleClickOpen = () => {
         setOpen(true);
+        setInputValue(props.list.Todos[props.todoId].Name)
+        setTextAreaValue(props.list.Todos[props.todoId].Description ?? "")
     };
 
     const handleClose = () => {

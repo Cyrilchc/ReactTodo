@@ -45,7 +45,7 @@ export default function PopupCardEditList(props: PopupCardEditListProps) {
     // https://material-ui.com/components/dialogs/
     const [open, setOpen] = React.useState(false);
     const [isError, setError] = React.useState(false);
-    const [inputValue, setInputValue] = React.useState(props.list.Name);
+    const [inputValue, setInputValue] = React.useState('');
     const [inputHelper, setInputHelper] = React.useState('Veuillez entrer un nom');
     const [inputLabel, setInputLabel] = React.useState('Nom');
     const theme = useTheme();
@@ -53,6 +53,7 @@ export default function PopupCardEditList(props: PopupCardEditListProps) {
     const [snackOpen, setSnackOpen] = React.useState(false);
 
     const handleClickOpen = () => {
+        setInputValue(props.list.Name)
         setOpen(true);
     };
 
