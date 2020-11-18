@@ -1,10 +1,13 @@
 .flexContainer{
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  place-items: center;
+  place-items: start center; 
+  justify-content: center;  
+  /* justify-content: flex-start; */
+  /* display: inline-flex;
+  flex-wrap: wrap; */
   margin: 2em;
-  gap: 1em;
+  gap: 1em;  
 }
 
 .goBottomRight{

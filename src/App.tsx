@@ -177,25 +177,13 @@ function App() {
   };
 
   /**
-  * Filtre les listes
-  */
-  const handleSearchKeyDown = (event: React.KeyboardEvent): any => {
-    if (event.key === 'Enter') {
-      if (searchValue === "") {
-        setMutableLists(lists)
-      } else {
-        let newLists = lists.filter(list => list.Name.toLowerCase().includes(searchValue.toLowerCase()));
-        setMutableLists(newLists)
-      }
-    }
-  }
-
-  /**
    * Met à jour la valeur de la recherche
    * @param event 
    */
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
+    let newLists = lists.filter(list => list.Name.toLowerCase().includes(event.target.value.toLowerCase()));
+    setMutableLists(newLists)
   }
 
   /**
@@ -226,7 +214,6 @@ function App() {
               inputProps={{ 'aria-label': 'search' }}
               value={searchValue}
               onChange={handleSearchChange}
-              onKeyDown={handleSearchKeyDown}
             />
           </div>
           <Typography style={{ visibility: easterEggCount > 0 ? 'visible' : 'hidden' }} className={fullScreen ? classes.goBottomLeftEaster : classes.goRightEaster} variant="body1">{easterEggCount + " / " + 10}</Typography>

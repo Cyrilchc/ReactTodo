@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             maxWidth: 345,
+            minWidth: 345,
+            // flex: '1 1 150px',
+            // margin: '5px'
         },
         expand: {
             transform: 'rotate(0deg)',
@@ -237,6 +240,7 @@ export default function CardList(props: CardListProps) {
                             </IconButton>
                         </Tooltip>
                     }
+                    style={{height:'7em'}}
                 />
                 <CardContent>
                     <CardActions disableSpacing>
