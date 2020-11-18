@@ -18,6 +18,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
+import easter from './images/easterEgg.jpg';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -119,7 +120,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function App() {
   const classes = useStyles();
-  const [prefersDarkMode, setThemeMode] = React.useState(false);
+  const [prefersDarkMode, setThemeMode] = React.useState(true);
   const theme = React.useMemo(
     () =>
       createMuiTheme({
@@ -231,7 +232,7 @@ function App() {
           open={easterEggOpen}
           onClose={handleEasterEggClose}
         >
-          <img alt="easterEgg" src={window.location.origin + '/easterEgg.jpg'}
+          <img alt="easterEgg" src={easter} 
             onClick={() => window.open("https://knowyourmeme.com/memes/do-you-think-this-is-a-game", "_blank")}
             style={{ cursor: 'pointer' }}
           />
